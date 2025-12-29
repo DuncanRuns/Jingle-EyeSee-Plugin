@@ -22,7 +22,7 @@ compileJava {
 
 dependencies {
     // Choose Jingle version: https://jitpack.io/#DuncanRuns/Jingle/
-    implementation 'com.github.DuncanRuns:Jingle:49cb551db4'
+    implementation 'com.github.DuncanRuns:Jingle:v1.3.0'
 }
 
 
