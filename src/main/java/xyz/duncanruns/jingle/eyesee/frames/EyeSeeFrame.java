@@ -16,8 +16,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.AffineTransform;
 import java.util.Objects;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -28,7 +26,6 @@ public class EyeSeeFrame extends JFrame {
     private static final int SHOW_FLAGS = User32.SWP_NOACTIVATE | User32.SWP_NOSENDCHANGING;
     private static final WinDef.DWORD SRCCOPY = new WinDef.DWORD(0x00CC0020);
     private final OverlayFrame overlay = new OverlayFrame();
-    ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
     private ScheduledFuture<?> redrawTask;
 
     private final WinDef.HWND eyeSeeHwnd;
@@ -42,7 +39,6 @@ public class EyeSeeFrame extends JFrame {
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                executor.shutdownNow();
                 Jingle.log(Level.DEBUG, "EyeSee Closed.");
             }
         });
@@ -165,7 +161,7 @@ public class EyeSeeFrame extends JFrame {
         }
 
         long delay = 1_000_000_000L / fpsLimit;
-        redrawTask = this.executor.scheduleAtFixedRate(this::tick, delay, delay, TimeUnit.NANOSECONDS);
+        redrawTask = EyeSee.EXECUTOR.scheduleAtFixedRate(this::tick, delay, delay, TimeUnit.NANOSECONDS);
     }
 
     @Override
@@ -188,4 +184,9 @@ public class EyeSeeFrame extends JFrame {
         return new Rectangle((int) rectangle.getCenterX() - width / 2, (int) rectangle.getCenterY() - height / 2, width, height);
     }
 
+    @Override
+    public void dispose() {
+        overlay.dispose();
+        super.dispose();
+    }
 }

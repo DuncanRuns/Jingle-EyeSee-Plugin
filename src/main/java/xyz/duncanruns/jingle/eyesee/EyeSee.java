@@ -15,8 +15,12 @@ import java.awt.*;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Optional;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 public class EyeSee {
+    public static ScheduledExecutorService EXECUTOR = Executors.newSingleThreadScheduledExecutor();
+
     private static EyeSeeFrame eyeSeeFrame = null;
 
     private static EyeSeeOptions options = null;
@@ -57,6 +61,7 @@ public class EyeSee {
     }
 
     private static void stop() {
+        EXECUTOR.shutdown();
         if (eyeSeeFrame != null) eyeSeeFrame.dispose();
         if (options != null) if (!options.trySave()) Jingle.log(Level.ERROR, "Failed to save EyeSee Options!");
     }
